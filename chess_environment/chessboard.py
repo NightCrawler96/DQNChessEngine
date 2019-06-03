@@ -1,6 +1,5 @@
 import numpy as np
 import chess
-import scipy.sparse
 import re
 
 
@@ -38,10 +37,40 @@ class ChessBoard:
     @staticmethod
     def _encode_field(number_field):
         assert isinstance(number_field, int)
-        coded_field = np.zeros(6).tolist()
+        coded_field = np.zeros(6, dtype=int).tolist()
         if number_field != 0:
             sign = 1 if number_field > 0 else -1
             coded_field[abs(number_field) - 1] = sign
         return coded_field
 
+    def _encode_board(self, board):
+        assert isinstance(board, chess.Board)
 
+        board = self._fen_to_numbers(board.fen())
+        encoded_board = []
+        for field in board:
+            encoded_field = self._encode_field(field)
+            encoded_board += encoded_field
+
+        return encoded_board
+
+    def get_moves(self, flip=False):
+        board = self._current_state if not flip else self._current_state.mirror()
+        possible_moves = board.legal_moves
+        possible_states = []
+
+        for move in possible_moves:
+            future_board = board.copy()
+            future_board.push(move)
+            future_board = self._encode_board(future_board)
+            possible_states.append(future_board)
+
+        return possible_moves, possible_states
+
+    def make_move(self, move, flipped=False):
+        if flipped:
+            board = self._current_state.mirror()
+            board.push(move)
+            self._current_state = board.mirror()
+        else:
+            self._current_state.push(move)
