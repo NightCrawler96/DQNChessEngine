@@ -3,6 +3,15 @@ import chess
 import re
 
 
+class IllegalMoveException(Exception):
+    def __init__(self):
+        pass
+
+ATTACK = 5
+CHECKMATE = 100
+STALEMATE = 75
+IGNORE_GO = 420
+
 class ChessBoard:
     def __init__(self, starting_fen=chess.STARTING_BOARD_FEN):
         self._current_state = chess.Board(starting_fen)
@@ -14,9 +23,9 @@ class ChessBoard:
             'q': chess.QUEEN,
             'k': chess.KING
         })
+        self._attacked = False
 
-    def _fen_to_numbers(self, board_fen):
-        assert isinstance(board_fen, str)
+    def _fen_to_numbers(self, board_fen: str):
         fen_rows = re.split("\/|\ ", board_fen)[:8]
         board_numbers = []
 
@@ -35,17 +44,14 @@ class ChessBoard:
         return board_numbers
 
     @staticmethod
-    def _encode_field(number_field):
-        assert isinstance(number_field, int)
+    def _encode_field(number_field: int):
         coded_field = np.zeros(6, dtype=int).tolist()
         if number_field != 0:
             sign = 1 if number_field > 0 else -1
             coded_field[abs(number_field) - 1] = sign
         return coded_field
 
-    def _encode_board(self, board):
-        assert isinstance(board, chess.Board)
-
+    def _encode_board(self, board: chess.Board):
         board = self._fen_to_numbers(board.fen())
         encoded_board = []
         for field in board:
@@ -67,10 +73,39 @@ class ChessBoard:
 
         return possible_moves, possible_states
 
-    def make_move(self, move, flipped=False):
+    def _check_attack(self, move: chess.Move):
+        possible_attacks = self._current_state.is_attacked_by(self._current_state.turn, move.to_square)
+        if move.from_square in possible_attacks:
+            self._attacked = True
+
+    def make_move(self, move: chess.Move, flipped=False):
         if flipped:
             board = self._current_state.mirror()
+            assert isinstance(board, chess.Board)
+            if not board.is_legal(move):
+                raise IllegalMoveException()
             board.push(move)
             self._current_state = board.mirror()
         else:
+            if not self._current_state.is_legal(move):
+                raise IllegalMoveException()
             self._current_state.push(move)
+
+    """
+    True = WHITE
+    False = BLACK
+    """
+    def current_turn(self):
+        return self._current_state.turn
+
+    def get_results(self):
+        if self._current_state.is_game_over():
+            if self._current_state.is_checkmate():
+                return CHECKMATE
+            if self._current_state.is_stalemate():
+                return STALEMATE
+            if self._current_state.is_seventyfive_moves() or self._current_state.is_fivefold_repetition():
+                return IGNORE_GO
+        if self._attacked:
+            self._attacked = False
+            return ATTACK

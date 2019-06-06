@@ -2,7 +2,7 @@ import unittest
 
 import chess
 
-from chess_environment.chessboard import ChessBoard
+from chess_environment.chessboard import ChessBoard, IllegalMoveException
 
 
 class ChessBoardTests(unittest.TestCase):
@@ -96,6 +96,11 @@ class ChessBoardTests(unittest.TestCase):
         test_board.push(move)
         self.board.make_move(move, flipped=True)
         self.assertEqual(self.board._current_state.fen(), test_board.mirror().fen())
+
+    def test_illegal_move(self):
+        move = chess.Move(chess.A1, chess.A2)
+        with self.assertRaises(IllegalMoveException):
+            self.board.make_move(move)
 
 
 if __name__ == "__main__":
