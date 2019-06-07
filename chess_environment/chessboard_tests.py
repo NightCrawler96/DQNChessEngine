@@ -1,13 +1,11 @@
 import unittest
-
 import chess
-
-from chess_environment.chessboard import ChessBoard, IllegalMoveException
+import chess_environment.chessboard as cb
 
 
 class ChessBoardTests(unittest.TestCase):
     def setUp(self):
-        self.board = ChessBoard()
+        self.board = cb.ChessBoard()
 
     def test_fen_to_numbers(self):
         fen_code = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
@@ -99,8 +97,29 @@ class ChessBoardTests(unittest.TestCase):
 
     def test_illegal_move(self):
         move = chess.Move(chess.A1, chess.A2)
-        with self.assertRaises(IllegalMoveException):
+        with self.assertRaises(cb.IllegalMoveException):
             self.board.make_move(move)
+
+    def test_attack_detection(self):
+        fen_code = "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1"
+        board = cb.ChessBoard(fen_code)
+        move = chess.Move(chess.E4, chess.D5)
+        board.make_move(move)
+        self.assertTrue(board._attacked)
+
+    def test_reward_attack(self):
+        fen_code = "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1"
+        board = cb.ChessBoard(fen_code)
+        move = chess.Move(chess.E4, chess.D5)
+        board.make_move(move)
+        self.assertEqual(board.get_results(), cb.ATTACK)
+
+    def test_checkmate_detection(self):
+        fen_code = "8/8/8/5K1k/8/8/8/6R1 w k - 0 1"
+        board = cb.ChessBoard(fen_code)
+        move = chess.Move(chess.G1, chess.H1)
+        board.make_move(move)
+        self.assertEqual(board.get_results(), cb.CHECKMATE)
 
 
 if __name__ == "__main__":

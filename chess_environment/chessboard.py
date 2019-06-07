@@ -7,10 +7,12 @@ class IllegalMoveException(Exception):
     def __init__(self):
         pass
 
+
 ATTACK = 5
 CHECKMATE = 100
 STALEMATE = 75
 IGNORE_GO = 420
+
 
 class ChessBoard:
     def __init__(self, starting_fen=chess.STARTING_BOARD_FEN):
@@ -73,8 +75,8 @@ class ChessBoard:
 
         return possible_moves, possible_states
 
-    def _check_attack(self, move: chess.Move):
-        possible_attacks = self._current_state.is_attacked_by(self._current_state.turn, move.to_square)
+    def _check_attack(self, board: chess.Board, move: chess.Move):
+        possible_attacks = board.attacks(move.to_square)
         if move.from_square in possible_attacks:
             self._attacked = True
 
@@ -84,11 +86,13 @@ class ChessBoard:
             assert isinstance(board, chess.Board)
             if not board.is_legal(move):
                 raise IllegalMoveException()
+            self._check_attack(board, move)
             board.push(move)
             self._current_state = board.mirror()
         else:
             if not self._current_state.is_legal(move):
                 raise IllegalMoveException()
+            self._check_attack(self._current_state, move)
             self._current_state.push(move)
 
     """
@@ -109,3 +113,4 @@ class ChessBoard:
         if self._attacked:
             self._attacked = False
             return ATTACK
+        return 0
