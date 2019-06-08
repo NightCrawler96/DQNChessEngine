@@ -110,6 +110,7 @@ class ChessBoard:
                 return STALEMATE
             if self._current_state.is_seventyfive_moves() or self._current_state.is_fivefold_repetition():
                 return IGNORE_GO
+            self._current_state = chess.Board(chess.STARTING_BOARD_FEN)
         if self._attacked:
             self._attacked = False
             return ATTACK

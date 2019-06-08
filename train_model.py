@@ -1,8 +1,9 @@
-import random
 import numpy as np
 import keras
 from keras.layers import Dense
 import chess_environment.chessboard as cb
+from dqn_tools.memory import SimpleMemory
+from training_tools import DQNChessRecord
 
 # temporary simple model for testing base concept
 model = keras.Sequential([
@@ -12,9 +13,11 @@ model = keras.Sequential([
 ])
 model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
-memory = []
+memory = SimpleMemory(1000)
 board = cb.ChessBoard()
-for _ in range(100):
+TRAINING_STEPS = 256
+for i in range(TRAINING_STEPS):
+    print("Step {} of {}".format(i+1, TRAINING_STEPS))
     flip = not board.current_turn()
     moves, states = board.get_moves(flip=flip)
     highest_prize = 0
@@ -31,15 +34,18 @@ for _ in range(100):
     real_prize = board.get_results()
     best_state = np.array(best_state).reshape((1, 384))
     real_prize = np.array([real_prize]).reshape((1, 1))
-    memory.append([best_state, real_prize])
-
-    if len(memory) > 32:
-        samples = random.sample(memory, k=8)
-        samples = list(map(list, zip(*samples)))
-        states, prizes = samples
+    record = DQNChessRecord()
+    record.state = best_state
+    record.reward = real_prize
+    memory.add(record)
+    training_batch = memory.get_batch(32)
+    if training_batch is not None:
+        samples = [[record.state, record.reward] for record in training_batch]
+        states, prizes = list(map(list, zip(*samples)))
         states = np.array(states)
         prizes = np.array(prizes)
         model.train_on_batch(states, prizes)
+model.save("./model.keras")
 
 
 
