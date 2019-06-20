@@ -53,12 +53,12 @@ class ChessBoardTests(unittest.TestCase):
         for number in desired_numbers:
             desired_output += self.board._encode_field(number)
 
-        actual_output = self.board._encode_board(board)
+        actual_output = self.board._encode_board(board.fen())
         self.assertListEqual(actual_output, desired_output)
 
     def test_getting_possible_moves(self):
         inner_board = self.board._current_state
-        moves, states = self.board.get_moves()
+        moves, states, _ = self.board.get_moves()
         test_move = ""
         for m in moves:  # getting first element of dynamic list
             test_move = m
@@ -66,12 +66,12 @@ class ChessBoardTests(unittest.TestCase):
 
         test_state = states[0]
         inner_board.push(test_move)
-        inner_board_coded = self.board._encode_board(inner_board)
+        inner_board_coded = self.board._encode_board(inner_board.fen())
         self.assertListEqual(test_state, inner_board_coded)
 
     def test_getting_possible_moves_flipped_board(self):
         inner_board = self.board._current_state
-        moves, states = self.board.get_moves(flip=True)
+        moves, states, _ = self.board.get_moves(flip=True)
         test_move = None
         for m in moves:  # getting first element of dynamic list
             test_move = m
@@ -80,8 +80,19 @@ class ChessBoardTests(unittest.TestCase):
         test_state = states[0]
         inner_board_flipped = inner_board.mirror()
         inner_board_flipped.push(test_move)
-        inner_board_flipped_coded = self.board._encode_board(inner_board_flipped)
+        inner_board_flipped_coded = self.board._encode_board(inner_board_flipped.fen())
         self.assertListEqual(test_state, inner_board_flipped_coded)
+
+    def test_making_move(self):
+        test_board = self.board._current_state.copy()
+        move = None
+        for m in test_board.legal_moves:
+            move = m
+            break
+
+        test_board.push(move)
+        self.board.make_move(move)
+        self.assertEqual(self.board._current_state.fen(), test_board.fen())
 
     def test_making_move_flipped_board(self):
         test_board = self.board._current_state.copy()

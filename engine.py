@@ -3,7 +3,7 @@ import numpy as np
 from chess_environment.chessboard import ChessBoard
 
 
-class DQNEngine:
+class DQNChessEngine:
     def __init__(self, model: keras.Model):
         self._model = model
 

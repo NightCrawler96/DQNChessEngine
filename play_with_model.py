@@ -1,11 +1,11 @@
 import chess
 import keras.models
 from chess_environment.chessboard import ChessBoard, IllegalMoveException
-from engine import DQNEngine
+from engine import DQNChessEngine
 
 board = ChessBoard()
-model = keras.models.load_model("./model.keras")
-ai_engine = DQNEngine(model)
+model = keras.models.load_model("./model.h5")
+ai_engine = DQNChessEngine(model)
 while not board._current_state.is_game_over():
     if(board._current_state.turn):
         print(board._current_state)
