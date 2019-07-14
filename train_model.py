@@ -6,11 +6,7 @@ import chess_environment.chessboard as cb
 from dqn_tools.memory import SimpleMemory
 from dqn_tools.trainers import DQNTrainer
 from training_tools import DQNChessRecord
-#
-#
-# TODO: change saved states to fens or add it to existing records
-# TODO: add reinforcement to training
-#
+
 # temporary simple model for testing base concept
 model = keras.Sequential([
     Dense(256, activation='relu', input_shape=(None, 384)),
@@ -68,6 +64,7 @@ def action(acting_model: keras.Model, models_memory: SimpleMemory, environment: 
 
 def training(
         acting_model: keras.Model,
+        target_model: keras.Model,
         models_memory: SimpleMemory,
         batch_size: int,
         gamma: float):
@@ -78,10 +75,13 @@ def training(
         reinforced_prizes = []
         for p, f in zip(prizes, fens):
             training_board = cb.ChessBoard(starting_fen=f)
-            next_moves, next_states, next_fens = training_board.get_moves()
-            _, chosen_state, _ = choose_action(acting_model, next_moves, next_states, next_fens)
-            estimated_next_prize = acting_model.predict(np.array(chosen_state).reshape((1, 1, 384)))[0]
-            reinforced_p = p + gamma * estimated_next_prize
+            if not training_board.game_over():
+                next_moves, next_states, next_fens = training_board.get_moves()
+                _, chosen_state, _ = choose_action(acting_model, next_moves, next_states, next_fens)
+                estimated_next_prize = target_model.predict(np.array(chosen_state).reshape((1, 1, 384)))[0]
+                reinforced_p = p + gamma * estimated_next_prize
+            else:
+                reinforced_p = p
             reinforced_prizes.append(reinforced_p)
 
         states = np.array(states)
@@ -93,11 +93,11 @@ memory = SimpleMemory(int(1e+4))
 model_trainer = DQNTrainer(model, memory, action, training)
 
 board = cb.ChessBoard()
-TRAINING_STEPS = int(2e+4)
+TRAINING_STEPS = int(2e+2)
 for i in range(TRAINING_STEPS):
     print("Step {} of {}".format(i+1, TRAINING_STEPS))
     model_trainer.take_action(board, 0.3)
-    model_trainer.train(32, 0.99)
+    model_trainer.train(batch_size=32, gamma=0.99, theta=0.01)
     if i % 1000 == 0:
         model_trainer.save("./tmp_model.h5")
 

@@ -118,3 +118,6 @@ class ChessBoard:
             self._attacked = False
             return ATTACK
         return 0
+
+    def game_over(self):
+        return self._current_state.is_game_over()
