@@ -89,15 +89,15 @@ def training(
         acting_model.train_on_batch(states, reinforced_prizes)
 
 
-memory = SimpleMemory(int(1e+4))
+memory = SimpleMemory(int(1e+5))
 model_trainer = DQNTrainer(model, memory, action, training)
 
 board = cb.ChessBoard()
-TRAINING_STEPS = int(2e+2)
+TRAINING_STEPS = int(2e+5)
 for i in range(TRAINING_STEPS):
     print("Step {} of {}".format(i+1, TRAINING_STEPS))
     model_trainer.take_action(board, 0.3)
-    model_trainer.train(batch_size=32, gamma=0.99, theta=0.01)
+    model_trainer.train(batch_size=32, gamma=0.99, theta=0.005)
     if i % 1000 == 0:
         model_trainer.save("./tmp_model.h5")
 
