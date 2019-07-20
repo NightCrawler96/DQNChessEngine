@@ -8,7 +8,7 @@ class DQNChessEngine:
         self._model = model
 
     def choose_move(self, board: ChessBoard, flip=False):
-        moves, states = board.get_moves(flip=flip)
+        moves, states, _ = board.get_moves(flip=flip)
         highest_prize = 0
         best_move = None
         best_state = None
