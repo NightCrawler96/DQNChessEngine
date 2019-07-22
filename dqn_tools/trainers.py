@@ -1,11 +1,15 @@
 import keras
 import numpy as np
+from dqn_tools.io import save, load
 
 
 class DQNTrainer:
-    def __init__(self, model: keras.Model, memory, action, training):
+    def __init__(self, model: keras.Model, memory, action, training, target_model: keras.Model = None):
         self._active_model = model
-        self._target_model = keras.models.clone_model(model)
+        if target_model is None:
+            self._target_model = keras.models.clone_model(model)
+        else:
+            self._target_model = target_model
         self._memory = memory
         self.action = action
         self.training = training
@@ -36,5 +40,19 @@ class DQNTrainer:
     def take_action(self, environment, epsilon=0.):
         self.action(self._active_model, self._memory, environment, epsilon)
 
-    def save(self, path: str):
-        self._target_model.save(path)
+    def save(self, directory: str, name: str):
+        save(directory, name,
+             active_model=self._active_model,
+             target_model=self._target_model,
+             memory=self._memory)
+
+
+def load_trainer(directory: str, name: str, action, training):
+    active, target, memory = load(directory, name)
+    return DQNTrainer(
+        model=active,
+        target_model=target,
+        memory=memory,
+        action=action,
+        training=training
+    )
