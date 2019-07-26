@@ -35,10 +35,11 @@ model = keras.Sequential([
 ])
 model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
-NAME = "LeakyDQNv0"
-LOAD = False
-LOAD_FROM = "final"
-TRAINING_STEPS = int(2e+5)
+NAME = "LeakyDQNv0_95000"
+LOAD = True
+LOAD_FROM = "./tmp"
+START_AT_STEP = 95001
+TRAINING_STEPS = int(12e+4)
 MEMORY_SIZE = int(15e+4)
 START_TRAINING_AT = 1000
 BATCH = 64
@@ -58,7 +59,7 @@ def choose_action(model: keras.Model, possible_moves, possible_states, fens):
     best_state = None
     best_state_fen = None
     for m, s, f in zip(possible_moves, possible_states, fens):
-        prize = model.predict(np.array(s).reshape((1, 384)))#np.array(s).reshape((1, 1, 384)))
+        prize = model.predict(np.array(s).reshape((1, 384)))
         if prize > highest_prize or best_move is None:
             highest_prize = prize
             best_move = m
@@ -126,14 +127,15 @@ def training(
         acting_model.train_on_batch(states, reinforced_prizes)
 
 
-memory = SimpleMemory(MEMORY_SIZE)
+
 if LOAD:
     model_trainer = load_trainer(LOAD_FROM, NAME, action, training)
 else:
+    memory = SimpleMemory(MEMORY_SIZE)
     model_trainer = DQNTrainer(model, memory, action, training)
 
 board = cb.ChessBoard()
-for i in range(TRAINING_STEPS):
+for i in range(START_AT_STEP, TRAINING_STEPS):
     print("Step {} of {}".format(i+1, TRAINING_STEPS))
     model_trainer.take_action(board, get_epsilon(i))
     model_trainer.train(batch_size=BATCH, gamma=GAMMA, theta=THETA)
