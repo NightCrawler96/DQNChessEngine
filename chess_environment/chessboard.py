@@ -121,3 +121,6 @@ class ChessBoard:
 
     def game_over(self):
         return self._current_state.is_game_over()
+
+    def turn(self):
+        return self._current_state.turn

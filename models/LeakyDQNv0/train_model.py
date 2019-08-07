@@ -35,18 +35,18 @@ model = keras.Sequential([
 ])
 model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
-NAME = "LeakyDQNv1"
-LOAD = False
+NAME = "LeakyDQNv0_95000"
+LOAD = True
 LOAD_FROM = "./tmp"
-START_AT_STEP = 0
-TRAINING_STEPS = int(2e+7)
-MEMORY_SIZE = int(1e+5)
-START_TRAINING_AT = int(2e+4)
+START_AT_STEP = 95001
+TRAINING_STEPS = int(12e+4)
+MEMORY_SIZE = int(15e+4)
+START_TRAINING_AT = 1000
 BATCH = 64
 GAMMA = 0.99
-THETA = 0.001
-EPSILON = 0.25
-EPSILON_TRESHOLD = START_TRAINING_AT * 1.01
+THETA = 0.01
+EPSILON = 0.2
+EPSILON_TRESHOLD = START_TRAINING_AT * 1.1
 
 
 def get_epsilon(step: int):
@@ -127,6 +127,7 @@ def training(
         acting_model.train_on_batch(states, reinforced_prizes)
 
 
+
 if LOAD:
     model_trainer = load_trainer(LOAD_FROM, NAME, action, training)
 else:
@@ -138,7 +139,7 @@ for i in range(START_AT_STEP, TRAINING_STEPS):
     print("Step {} of {}".format(i+1, TRAINING_STEPS))
     model_trainer.take_action(board, get_epsilon(i))
     model_trainer.train(batch_size=BATCH, gamma=GAMMA, theta=THETA)
-    if i % 50000 == 0:
+    if i % 1000 == 0:
         model_trainer.save("tmp", "{}_{}".format(NAME, i))
 
 model_trainer.save("final", "{}_{}k".format(NAME, int(TRAINING_STEPS / 1000)))
