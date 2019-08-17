@@ -9,11 +9,15 @@ seed = 12345
 np.random.seed(seed)
 # temporary simple model for testing base concept
 model_template = BuzdyganDQNv0Templte()
-LOAD = False
-LOAD_FROM = ""
+LOAD = True
+LOAD_FROM = "final/"
 
 if LOAD:
-    model_trainer = load_trainer(LOAD_FROM, model_template.NAME, model_template.action, model_template.training)
+    model_trainer = load_trainer(
+        LOAD_FROM,
+        "{}_50k.h5f".format(model_template.NAME),
+        model_template.action,
+        model_template.training)
 else:
     model = model_template.new_model(seed)
     memory = SimpleMemory(model_template.MEMORY_SIZE)
