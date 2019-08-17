@@ -38,11 +38,11 @@ def get_state_shape(competitor: str):
 
 
 competitors_paths = {
-    # "SimpleDQNv2 200k": "models/SimpleDQNv2/SimpleDQNv2_200k.h5",
-    "LeakyDQNv0 120k": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_target.h5f",
-    # "LeakyDQNv0 20k": "models/LeakyDQNv0/IntermediateModels/LeakyDQNv0_20000_target.h5f",
-    # "LeakyDQNv0 60k": "models/LeakyDQNv0/IntermediateModels/LeakyDQNv0_60000_target.h5f",
-    "LeakyDQNv0 initial": "models/LeakyDQNv0/IntermediateModels/LeakyDQNv0_0_target.h5f",
+    "SimpleDQNv2 200k": "models/SimpleDQNv2/SimpleDQNv2_200k.h5",
+    "LeakyDQNv0 120k active ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_active.h5f",
+    "LeakyDQNv0 120k target ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_target.h5f",
+    "BuzdyganDQNv0 50k active": "final/BuzdyganDQNv0_50k_active.h5f",
+    "BuzdyganDQNv0 50k target": "final/BuzdyganDQNv0_50k_target.h5f",
 }
 competitors = {}
 for competitor, path in zip(competitors_paths.keys(), competitors_paths.values()):
@@ -76,7 +76,7 @@ for p in pairs:
                 white_table.Wins += 1
                 print(white_k, "Won in turn", turns)
                 break
-            if result == STALEMATE :
+            if result == STALEMATE:
                 white_table.Stales += 1
                 print("Draw")
                 break
@@ -86,7 +86,7 @@ for p in pairs:
                 print(black_k, "Won in turn", turns)
                 break
             turns += 1
-            if result == STALEMATE or turns > 200:
+            if result == STALEMATE or turns > 150:
                 white_table.Stales += 1
                 print("Draw")
                 break
