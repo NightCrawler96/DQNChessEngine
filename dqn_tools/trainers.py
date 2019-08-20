@@ -48,7 +48,7 @@ class DQNTrainer:
 
 
 def load_trainer(directory: str, name: str, action, training):
-    active, target, memory = load(directory, name)
+    active, target, memory = load(directory, name, has_memory=True)
     return DQNTrainer(
         model=active,
         target_model=target,

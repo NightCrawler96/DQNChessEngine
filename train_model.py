@@ -15,7 +15,7 @@ LOAD_FROM = "final/"
 if LOAD:
     model_trainer = load_trainer(
         LOAD_FROM,
-        "{}_50k.h5f".format(model_template.NAME),
+        "{}_100k".format(model_template.NAME),
         model_template.action,
         model_template.training)
 else:
