@@ -5,7 +5,7 @@ from chess_environment.chessboard import ChessBoard
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QSizePolicy, QLabel
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel
 
 # based on: https://stackoverflow.com/a/47329268/6708094
 from engine import DQNChessEngine
@@ -15,7 +15,7 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        model = keras.models.load_model("tmp/BuzdyganDQNv0_134000_target.h5f", compile=False)
+        model = keras.models.load_model("final/BuzdyganDQNv0_210k_target.h5f", compile=False)
         self.ai_engine = DQNChessEngine(model)
         self.board: chess.Board = chess.Board()
         self.chosen_piece = [None, None]

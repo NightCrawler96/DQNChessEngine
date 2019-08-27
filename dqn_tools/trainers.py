@@ -46,9 +46,13 @@ class DQNTrainer:
              target_model=self._target_model,
              memory=self._memory)
 
+    def add_momory(self, memory):
+        if self._memory is None:
+            self._memory = memory
 
-def load_trainer(directory: str, name: str, action, training):
-    active, target, memory = load(directory, name, has_memory=True)
+
+def load_trainer(directory: str, name: str, action, training, has_memory: bool = True):
+    active, target, memory = load(directory, name, has_memory=has_memory)
     return DQNTrainer(
         model=active,
         target_model=target,

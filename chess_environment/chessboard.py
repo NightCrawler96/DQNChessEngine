@@ -8,9 +8,9 @@ class IllegalMoveException(Exception):
         pass
 
 
-ATTACK = 5
-CHECKMATE = 100
-STALEMATE = 75
+ATTACK = 10
+CHECKMATE = 200
+STALEMATE = -50
 IGNORE_GO = 420
 
 

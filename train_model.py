@@ -3,21 +3,26 @@ import numpy as np
 import chess_environment.chessboard as cb
 from dqn_tools.memory import SimpleMemory
 from dqn_tools.trainers import DQNTrainer, load_trainer
-from models.BuzdyganDQNv0.template import BuzdyganDQNv0Templte
+from models.BuzdyganDQNv1.template import BuzdyganDQNv1Templte
 
 seed = 12345
 np.random.seed(seed)
 # temporary simple model for testing base concept
-model_template = BuzdyganDQNv0Templte()
+model_template = BuzdyganDQNv1Templte()
 LOAD = True
+LOAD_MEMORY = True
 LOAD_FROM = "final/"
 
 if LOAD:
     model_trainer = load_trainer(
         LOAD_FROM,
-        "{}_150k".format(model_template.NAME),
+        "{}_20k".format(model_template.NAME),
         model_template.action,
-        model_template.training)
+        model_template.training,
+        has_memory=LOAD_MEMORY)
+    if not LOAD_MEMORY:
+        memory = SimpleMemory(model_template.MEMORY_SIZE)
+        model_trainer.add_memory(memory)
 else:
     model = model_template.new_model(seed)
     memory = SimpleMemory(model_template.MEMORY_SIZE)
