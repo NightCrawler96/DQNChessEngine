@@ -5,7 +5,7 @@ from chess_environment.chessboard import ChessBoard
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QSizePolicy, QLabel
 
 # based on: https://stackoverflow.com/a/47329268/6708094
 from engine import DQNChessEngine
@@ -15,7 +15,7 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        model = keras.models.load_model("final/BuzdyganDQNv0_50k_target.h5f", compile=False)
+        model = keras.models.load_model("tmp/BuzdyganDQNv0_134000_target.h5f", compile=False)
         self.ai_engine = DQNChessEngine(model)
         self.board: chess.Board = chess.Board()
         self.chosen_piece = [None, None]
@@ -38,7 +38,6 @@ class Window(QWidget):
         self.svgX = 10
         self.svgY = 10
 
-        # self.restart_button.clicked.connect(self._restart)
         self.setWindowTitle("DQNChess GUI")
         self.setFixedSize(self.window_width, self.window_height)
 
@@ -54,9 +53,19 @@ class Window(QWidget):
             self.button_height)
         self.restart_button.clicked.connect(self.restart)
 
+        self.text_label = QLabel("Start playing.", self)
+        self.text_label.setGeometry(
+            self.board_size + self.margin + 5,
+            self.margin * 2 + self.button_height,
+            100,
+            20
+        )
+
     def restart(self):
         self.board.reset()
         self.last_ai_move = None
+        self.svg_clickable = True
+        self.text_label.setText("Start playing.")
 
     def _is_game_over(self):
         if self.board.is_game_over():
@@ -115,12 +124,16 @@ class Window(QWidget):
     def paintEvent(self, a0: QtGui.QPaintEvent):
         king_attacked_by = None
         if self._is_game_over():
-            if self.result is '1-0':
-                king_square = self.board.king(True)
-                king_attacked_by = self.board.attackers(False, king_square)
-            else:
+            if self.result == '1-0':
                 king_square = self.board.king(False)
                 king_attacked_by = self.board.attackers(True, king_square)
+                self.text_label.setText("You have won!")
+            elif self.result == '0-1':
+                king_square = self.board.king(True)
+                king_attacked_by = self.board.attackers(False, king_square)
+                self.text_label.setText("You have lost! :(")
+            else:
+                self.text_label.setText("Stalemate")
         self.board_svg = chess.svg.board(
             self.board,
             size=self.board_size,
