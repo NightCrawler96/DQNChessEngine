@@ -12,8 +12,8 @@ from training_tools import DQNChessRecord
 
 class BuzdyganDQNv1Templte(ModelTemplate):
     NAME = "BuzdyganDQNv1"
-    START_AT_STEP = 20000
-    TRAINING_STEPS = 60000
+    START_AT_STEP = 60000
+    TRAINING_STEPS = 150000
     MEMORY_SIZE = 50000
     START_TRAINING_AT = 20000
     BATCH = 32

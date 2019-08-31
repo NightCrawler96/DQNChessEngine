@@ -46,7 +46,7 @@ class DQNTrainer:
              target_model=self._target_model,
              memory=self._memory)
 
-    def add_momory(self, memory):
+    def add_memory(self, memory):
         if self._memory is None:
             self._memory = memory
 

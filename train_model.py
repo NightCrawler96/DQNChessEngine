@@ -16,7 +16,7 @@ LOAD_FROM = "final/"
 if LOAD:
     model_trainer = load_trainer(
         LOAD_FROM,
-        "{}_20k".format(model_template.NAME),
+        "{}_60k".format(model_template.NAME),
         model_template.action,
         model_template.training,
         has_memory=LOAD_MEMORY)
