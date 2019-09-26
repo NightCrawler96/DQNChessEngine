@@ -87,7 +87,7 @@ def action(acting_model: keras.Model, models_memory: SimpleMemory, environment: 
         best_move, best_state, best_state_fen = choose_action(acting_model, moves, states, fens)
     # make move
     environment.make_move(best_move, flip)
-    real_prize = environment.get_results()
+    real_prize = environment.get_reward()
     best_state = np.array(best_state).reshape((384,))
     real_prize = np.array([real_prize]).reshape((1, 1))
     if real_prize == cb.IGNORE_GO:

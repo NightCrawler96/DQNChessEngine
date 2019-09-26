@@ -86,7 +86,7 @@ class BuzdyganDQNv1Templte(ModelTemplate):
             best_move, best_state, best_state_fen, _ = self.choose_action(acting_model, moves, states, fens)
         # make move
         environment.make_move(best_move, flip)
-        real_prize = environment.get_results()
+        real_prize = environment.get_reward()
         best_state = np.array(best_state).reshape((384,))
         real_prize = np.array([real_prize]).reshape((1, 1))
         if real_prize == cb.IGNORE_GO:
@@ -118,7 +118,7 @@ class BuzdyganDQNv1Templte(ModelTemplate):
                     opponents_move, _, _, _ = self.choose_action(
                         target_model, opponents_next_moves, np.array(opponents_next_states), opponents_next_fens)
                     training_board.make_move(opponents_move, flipped=True)
-                    opponents_prize = training_board.get_results()
+                    opponents_prize = training_board.get_reward()
                     if training_board.game_over():
                         reinforced_p = p - gamma * opponents_prize
                     else:

@@ -123,14 +123,14 @@ class ChessBoardTests(unittest.TestCase):
         board = cb.ChessBoard(fen_code)
         move = chess.Move(chess.E4, chess.D5)
         board.make_move(move)
-        self.assertEqual(board.get_results(), cb.ATTACK)
+        self.assertEqual(board.get_reward(), cb.ATTACK)
 
     def test_checkmate_detection(self):
         fen_code = "8/8/8/5K1k/8/8/8/6R1 w k - 0 1"
         board = cb.ChessBoard(fen_code)
         move = chess.Move(chess.G1, chess.H1)
         board.make_move(move)
-        self.assertEqual(board.get_results(), cb.CHECKMATE)
+        self.assertEqual(board.get_reward(), cb.CHECKMATE)
 
 
 if __name__ == "__main__":

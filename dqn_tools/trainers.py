@@ -10,7 +10,7 @@ class DQNTrainer:
             self._target_model = keras.models.clone_model(model)
         else:
             self._target_model = target_model
-        self._memory = memory
+        self.memory = memory
         self.action = action
         self.training = training
 
@@ -24,7 +24,7 @@ class DQNTrainer:
     
     """
     def train(self, batch_size: int = 32, gamma: float = 0.99, theta: float = 0.):
-        self.training(self._active_model, self._target_model, self._memory, batch_size, gamma)
+        self.training(self._active_model, self._target_model, self.memory, batch_size, gamma)
         if theta > 0:
             self._update_target(theta)
 
@@ -38,17 +38,17 @@ class DQNTrainer:
         self._target_model.set_weights(self._active_model.get_weights())
 
     def take_action(self, environment, epsilon=0.):
-        self.action(self._active_model, self._memory, environment, epsilon)
+        self.action(self._active_model, self.memory, environment, epsilon)
 
     def save(self, directory: str, name: str):
         save(directory, name,
              active_model=self._active_model,
              target_model=self._target_model,
-             memory=self._memory)
+             memory=self.memory)
 
     def add_memory(self, memory):
-        if self._memory is None:
-            self._memory = memory
+        if self.memory is None:
+            self.memory = memory
 
 
 def load_trainer(directory: str, name: str, action, training, has_memory: bool = True):

@@ -3,14 +3,15 @@ import numpy as np
 import chess_environment.chessboard as cb
 from dqn_tools.memory import SimpleMemory
 from dqn_tools.trainers import DQNTrainer, load_trainer
+from models.BorsukDQNv0.template import BorsukDQNv0Template
 from models.BuzdyganDQNv1.template import BuzdyganDQNv1Templte
 
 seed = 12345
 np.random.seed(seed)
 # temporary simple model for testing base concept
-model_template = BuzdyganDQNv1Templte()
-LOAD = True
-LOAD_MEMORY = True
+model_template = BorsukDQNv0Template()
+LOAD = False
+LOAD_MEMORY = False
 LOAD_FROM = "final/"
 
 if LOAD:
@@ -25,7 +26,7 @@ if LOAD:
         model_trainer.add_memory(memory)
 else:
     model = model_template.new_model(seed)
-    memory = SimpleMemory(model_template.MEMORY_SIZE)
+    memory = model_template.new_memory("./training_memory")
     model_trainer = DQNTrainer(model, memory, model_template.action, model_template.training)
 
 board = cb.ChessBoard()
@@ -33,6 +34,8 @@ for i in range(model_template.START_AT_STEP, model_template.TRAINING_STEPS):
     print("Step {} of {}".format(i+1, model_template.TRAINING_STEPS))
     model_trainer.take_action(board, model_template.get_epsilon(i))
     model_trainer.train(batch_size=model_template.BATCH, gamma=model_template.GAMMA, theta=model_template.THETA)
+    if i > 0 and i % model_template.LOAD_NEW_PIECE == 0:
+        model_trainer.memory.load_piece()
     if i % model_template.SAVE_PER_STEPS == 0:
         model_trainer.save("tmp", "{}_{}".format(model_template.NAME, i))
 

@@ -24,7 +24,7 @@ def make_move(player: DQNChessEngine, board: ChessBoard, black: bool, state_shap
     move, _ = player.choose_move(board, black, state_shape=state_shape)
     assert isinstance(move, chess.Move)
     board.make_move(move, black)
-    return board, board.get_results()
+    return board, board.get_reward()
 
 
 def get_state_shape(competitor: str):
