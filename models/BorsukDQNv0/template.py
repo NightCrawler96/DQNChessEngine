@@ -24,7 +24,7 @@ class BorsukDQNv0Template(ModelTemplate):
     EPSILON = 0.2
     EPSILON_THRESHOLD = START_TRAINING_AT * 1.01
     SAVE_PER_STEPS = 1000
-    LOAD_NEW_PIECE = 3000
+    LOAD_NEW_PIECE = 20000
 
     @staticmethod
     def new_model(seed: int):
