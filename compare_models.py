@@ -2,7 +2,7 @@ import copy
 import chess
 import itertools
 from keras.engine.saving import load_model
-from chess_environment.chessboard import ChessBoard, STALEMATE, CHECKMATE
+from chess_environment.chessboard import ChessBoard, Rewards
 from engine import DQNChessEngine
 
 
@@ -10,6 +10,7 @@ class Table:
     Wins: int = 0
     Looses: int = 0
     Stales: int = 0
+    Timeouts: int = 0
 
     def switch(self):
         buf = self.Looses
@@ -17,14 +18,14 @@ class Table:
         self.Wins = buf
 
     def __str__(self):
-        return "Won: {} Lost: {} Draws: {}".format(self.Wins, self.Looses, self.Stales)
+        return "Won: {} Lost: {} Stalemates: {} Timeouts: {}".format(self.Wins, self.Looses, self.Stales, self.Timeouts)
 
 
 def make_move(player: DQNChessEngine, board: ChessBoard, black: bool, state_shape: tuple):
     move, _ = player.choose_move(board, black, state_shape=state_shape)
     assert isinstance(move, chess.Move)
     board.make_move(move, black)
-    return board, board.get_reward()
+    return board, board.get_result()
 
 
 def get_state_shape(competitor: str):
@@ -37,12 +38,34 @@ def get_state_shape(competitor: str):
         return 1, 384
 
 
+def check_results(white, black, white_table, result):
+    if result == '1-0':
+        white_table.Wins += 1
+        print(white, "Won in turn", turns)
+    elif result == '0-1':
+        white_table.Looses += 1
+        print(black, "Won in turn", turns)
+    elif result == '1/2-1/2':
+        white_table.Stales += 1
+        print("Stalemate")
+    elif result == 'Timeout':
+        white_table.Timeouts += 1
+    else:
+        return False, white_table
+
+    return True, white_table
+
+
 competitors_paths = {
     "SimpleDQNv2 200k": "models/SimpleDQNv2/SimpleDQNv2_200k.h5",
     "LeakyDQNv0 120k active ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_active.h5f",
     "LeakyDQNv0 120k target ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_target.h5f",
-    "BuzdyganDQNv0 50k active": "final/BuzdyganDQNv0_50k_active.h5f",
-    "BuzdyganDQNv0 50k target": "final/BuzdyganDQNv0_50k_target.h5f",
+    "BuzdyganDQNv0 210k target": "models/BuzdyganDQNv0/FinalModel/BuzdyganDQNv0_210k_active.h5f",
+    "BuzdyganDQNv1 150k target": "models/BuzdyganDQNv1/FinalModel/BuzdyganDQNv1_150k_target.h5f",
+    "BorsukDQNv0 30k active": "tmp/BorsukDQNv0_30000_active.h5f",
+    "BorsukDQNv0 30k target": "tmp/BorsukDQNv0_30000_target.h5f",
+    "BorsukDQNv0 61k active": "tmp/BorsukDQNv0_61000_target.h5f",
+    "BorsukDQNv0 61k target": "tmp/BorsukDQNv0_61000_target.h5f"
 }
 competitors = {}
 for competitor, path in zip(competitors_paths.keys(), competitors_paths.values()):
@@ -72,24 +95,14 @@ for p in pairs:
         turns = 0
         while True:
             board, result = make_move(white, board, black=False, state_shape=white_state_shape)
-            if result == CHECKMATE:
-                white_table.Wins += 1
-                print(white_k, "Won in turn", turns)
-                break
-            if result == STALEMATE:
-                white_table.Stales += 1
-                print("Draw")
+            finished, white_table = check_results(white_k, black_k, white_table, result)
+            if finished:
                 break
             board, result = make_move(black, board, black=True, state_shape=black_state_shape)
-            if result == CHECKMATE:
-                white_table.Looses += 1
-                print(black_k, "Won in turn", turns)
+            finished, white_table = check_results(white_k, black_k, white_table, result)
+            if finished:
                 break
-            turns += 1
-            if result == STALEMATE or turns > 150:
-                white_table.Stales += 1
-                print("Draw")
-                break
+
     results[white_k].append((black_k, copy.deepcopy(white_table)))
     white_table.switch()
     results[black_k].append((white_k, white_table))

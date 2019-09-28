@@ -108,6 +108,9 @@ class ChessBoard:
     def current_turn(self):
         return self._current_state.turn
 
+    def timeout(self):
+        return self._turn_num >= self._reset_at
+
     def get_reward(self, reset: bool = True):
         reward = Rewards.TURN_PENALTY.value * self._turn_num
         if self._current_state.is_game_over():
@@ -117,7 +120,7 @@ class ChessBoard:
                 reward += Rewards.STALEMATE.value
             if reset:
                 self.reset()
-        elif self._turn_num >= self._reset_at and reset:
+        elif self.timeout() and reset:
             self.reset()
 
         if self._attacked:
@@ -127,7 +130,12 @@ class ChessBoard:
         return reward
 
     def get_result(self):
-        return self._current_state.result()
+        if self.game_over():
+            return self._current_state.result()
+        elif self.timeout():
+            return "Timeout"
+        else:
+            return None
 
     def game_over(self):
         return self._current_state.is_game_over()

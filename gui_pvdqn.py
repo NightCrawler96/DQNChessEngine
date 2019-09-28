@@ -15,7 +15,7 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        model = keras.models.load_model("final/BuzdyganDQNv1_150k_target.h5f", compile=False)
+        model = keras.models.load_model("tmp/BorsukDQNv0_61000_target.h5f", compile=False)
         self.ai_engine = DQNChessEngine(model)
         self.board: ChessBoard = ChessBoard()
         self.chosen_piece = [None, None]
