@@ -3,21 +3,20 @@ import numpy as np
 import chess_environment.chessboard as cb
 from dqn_tools.memory import SimpleMemory
 from dqn_tools.trainers import DQNTrainer, load_trainer
-from models.BorsukDQNv0.template import BorsukDQNv0Template
-from models.BuzdyganDQNv1.template import BuzdyganDQNv1Templte
+from models.BorsukDQNv1.template import BorsukDQNv1Template
 
 seed = 12345
 np.random.seed(seed)
 # temporary simple model for testing base concept
-model_template = BorsukDQNv0Template()
+model_template = BorsukDQNv1Template()
 LOAD = False
-LOAD_MEMORY = False
-LOAD_FROM = "final/"
+LOAD_MEMORY = True
+LOAD_FROM = "tmp/"
 
 if LOAD:
     model_trainer = load_trainer(
         LOAD_FROM,
-        "{}_60k".format(model_template.NAME),
+        "{}_61000".format(model_template.NAME),
         model_template.action,
         model_template.training,
         has_memory=LOAD_MEMORY)

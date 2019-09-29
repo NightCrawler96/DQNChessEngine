@@ -58,14 +58,10 @@ def check_results(white, black, white_table, result):
 
 competitors_paths = {
     "SimpleDQNv2 200k": "models/SimpleDQNv2/SimpleDQNv2_200k.h5",
-    "LeakyDQNv0 120k active ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_active.h5f",
     "LeakyDQNv0 120k target ": "models/LeakyDQNv0/FinalModel/LeakyDQNv0_120k_target.h5f",
     "BuzdyganDQNv0 210k target": "models/BuzdyganDQNv0/FinalModel/BuzdyganDQNv0_210k_active.h5f",
     "BuzdyganDQNv1 150k target": "models/BuzdyganDQNv1/FinalModel/BuzdyganDQNv1_150k_target.h5f",
-    "BorsukDQNv0 30k active": "tmp/BorsukDQNv0_30000_active.h5f",
-    "BorsukDQNv0 30k target": "tmp/BorsukDQNv0_30000_target.h5f",
-    "BorsukDQNv0 61k active": "tmp/BorsukDQNv0_61000_target.h5f",
-    "BorsukDQNv0 61k target": "tmp/BorsukDQNv0_61000_target.h5f"
+    "BorsukDQNv0 103k target": "models/BorsukDQNv0/FinalModel/BorsukDQNv0_103000_target.h5f",
 }
 competitors = {}
 for competitor, path in zip(competitors_paths.keys(), competitors_paths.values()):

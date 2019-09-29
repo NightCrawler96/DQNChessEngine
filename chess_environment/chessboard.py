@@ -11,9 +11,9 @@ class IllegalMoveException(Exception):
 
 
 class Rewards(Enum):
-    ATTACK = 15
+    ATTACK = 20
     CHECKMATE = 100
-    STALEMATE = -10
+    STALEMATE = 0
     TURN_PENALTY = -.5
 
 

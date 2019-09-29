@@ -13,7 +13,7 @@ from training_tools import DQNChessRecord
 
 class BorsukDQNv0Template(ModelTemplate):
     NAME = "BorsukDQNv0"
-    START_AT_STEP = 0
+    START_AT_STEP = 61000
     MEMORY_SIZE = 100000
     MEMORY_PIECE = 10000
     START_TRAINING_AT = 5000
