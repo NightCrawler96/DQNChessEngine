@@ -9,14 +9,14 @@ seed = 12345
 np.random.seed(seed)
 # temporary simple model for testing base concept
 model_template = BorsukDQNv1Template()
-LOAD = False
+LOAD = True
 LOAD_MEMORY = True
 LOAD_FROM = "tmp/"
 
 if LOAD:
     model_trainer = load_trainer(
         LOAD_FROM,
-        "{}_61000".format(model_template.NAME),
+        "{}_149000".format(model_template.NAME),
         model_template.action,
         model_template.training,
         has_memory=LOAD_MEMORY)
