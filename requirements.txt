@@ -6,4 +6,4 @@ keras-rl==0.4.2
 numpy==1.16.4
 python-chess==0.28.0
 tensorboard==1.9.0
-tensorflow==1.15.0
+tensorflow==1.15.2
